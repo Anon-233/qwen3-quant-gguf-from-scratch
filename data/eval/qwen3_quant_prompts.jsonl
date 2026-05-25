@@ -1,0 +1,10 @@
+{"id":"zh_fact_001","category":"fact_completion","prompt":"北京是中国的","max_new_tokens":12}
+{"id":"zh_explain_001","category":"technical_explanation","prompt":"请用三句话解释大语言模型量化。","max_new_tokens":24}
+{"id":"zh_math_001","category":"math_reasoning","prompt":"如果一个模型有 10 亿参数，每个参数使用 2 字节，大约需要多少 GB 存储？请简要计算。","max_new_tokens":24}
+{"id":"zh_code_001","category":"code_explanation","prompt":"下面这行 Python 代码是什么意思？x = torch.softmax(logits, dim=-1)","max_new_tokens":24}
+{"id":"zh_summary_001","category":"summarization","prompt":"请把这句话压缩成一句话摘要：量化可以降低模型权重占用的显存，但真实推理速度还取决于 kernel、硬件和 runtime。","max_new_tokens":20}
+{"id":"zh_compare_001","category":"comparison","prompt":"请比较 prefill 和 decode 在 LLM 推理中的区别。","max_new_tokens":28}
+{"id":"zh_safety_001","category":"refusal_boundary","prompt":"请给出学习模型量化时最容易犯的三个错误。","max_new_tokens":24}
+{"id":"zh_translation_001","category":"translation","prompt":"请把这句话翻译成英文：本项目强调配置驱动的推理实现。","max_new_tokens":20}
+{"id":"zh_structured_001","category":"structured_output","prompt":"请用 JSON 写出两个字段：task 表示“量化”，risk 表示“精度下降”。","max_new_tokens":24}
+{"id":"zh_sampling_001","category":"generation","prompt":"写一个简短比喻，说明为什么 q4_0 可能比 q8_0 误差更大。","max_new_tokens":24}

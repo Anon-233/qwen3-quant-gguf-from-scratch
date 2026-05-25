@@ -1,0 +1,62 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Lint / test caches
+.ruff_cache/
+.pytest_cache/
+
+# Generated model artifacts
+outputs/
+models/
+reports/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs / temp
+*.log
+tmp/
+temp/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local agent / assistant state
+.codex/
+.claude/
+.claude.json
+CLAUDE.local.md
+AGENTS.local.md
+.mcp.local.json
+
+# Local caches
+.cache/
+.huggingface/
+wandb/
+
+# Large generated artifacts
+models/
+outputs/
+reports/
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth

@@ -1,0 +1,17 @@
+MAGIC = b"MGUF"
+VERSION = 1
+DEFAULT_ALIGNMENT = 32
+
+DTYPE_F32 = 0
+DTYPE_F16 = 1
+DTYPE_Q8_0 = 8
+DTYPE_Q4_0 = 4
+
+DTYPE_NAMES = {
+    DTYPE_F32: "f32",
+    DTYPE_F16: "f16",
+    DTYPE_Q8_0: "q8_0",
+    DTYPE_Q4_0: "q4_0",
+}
+
+NAME_TO_DTYPE = {v: k for k, v in DTYPE_NAMES.items()}
