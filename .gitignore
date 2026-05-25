@@ -7,11 +7,14 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
 
 # Lint / test caches
 .ruff_cache/
 .pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
 # Generated model artifacts
 outputs/
@@ -37,14 +40,49 @@ temp/
 !.env.example
 *.pem
 *.key
+*.cert
+*.crt
+*.p12
+*.pfx
 
-# Local agent / assistant state
-.codex/
-.claude/
+# AI assistant / agent files
+#
+# Keep shareable project instructions in git when present:
+#   AGENTS.md, CLAUDE.md
+#   .codex/**/*.md, .codex/**/*.json
+#   .claude/**/*.md, .claude/**/*.json
+#
+# Ignore only local state, secrets, sessions, caches, and machine-specific
+# settings. This keeps Codex / Claude Code project guidance versioned without
+# publishing personal assistant history or credentials.
+.codex/sessions/
+.codex/logs/
+.codex/cache/
+.codex/tmp/
+.codex/local/
+.codex/history/
+.codex/**/*.local.*
+.codex/**/settings.local.*
+.codex/**/.env
+.codex/**/.env.*
+
+.claude/settings.local.json
+.claude/**/settings.local.json
+.claude/logs/
+.claude/cache/
+.claude/tmp/
+.claude/projects/
+.claude/todos/
+.claude/history/
+.claude/**/*.local.*
+.claude/**/.env
+.claude/**/.env.*
+
 .claude.json
 CLAUDE.local.md
 AGENTS.local.md
 .mcp.local.json
+.mcp.*.local.json
 
 # Local caches
 .cache/
@@ -52,9 +90,6 @@ AGENTS.local.md
 wandb/
 
 # Large generated artifacts
-models/
-outputs/
-reports/
 *.gguf
 *.safetensors
 *.bin
