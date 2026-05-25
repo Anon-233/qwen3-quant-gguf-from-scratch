@@ -19,7 +19,16 @@ def generate_tokens(
     device = getattr(model, "device", input_ids.device)
     generated = input_ids.to(device).clone()
     eos = set(eos_token_id if isinstance(eos_token_id, list) else [eos_token_id]) - {None}
-    cache = KVCache() if use_cache else None
+    config = getattr(model, "config", None)
+    if use_cache and config is not None:
+        cache = KVCache(
+            max_seq_len=config.max_position_embeddings,
+            num_layers=config.num_hidden_layers,
+        )
+    elif use_cache:
+        cache = KVCache()
+    else:
+        cache = None
     for _ in range(max_new_tokens):
         context = (
             generated[:, -1:]

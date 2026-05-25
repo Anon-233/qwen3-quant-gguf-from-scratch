@@ -24,6 +24,7 @@ def gqa_attention(
     kv_cache=None,
     q_norm_weight: torch.Tensor | None = None,
     k_norm_weight: torch.Tensor | None = None,
+    rope_cache=None,
 ) -> torch.Tensor:
     bsz, seq_len, _ = x.shape
     q = x @ wq.to(x.dtype).T
@@ -37,8 +38,8 @@ def gqa_attention(
     if k_norm_weight is not None:
         k = rms_norm(k, k_norm_weight, config.rms_norm_eps)
     position_offset = 0 if kv_cache is None else kv_cache.length(layer_idx)
-    q = apply_rope(q, position_offset, config.rope_theta)
-    k = apply_rope(k, position_offset, config.rope_theta)
+    q = apply_rope(q, position_offset, config.rope_theta, rope_cache=rope_cache)
+    k = apply_rope(k, position_offset, config.rope_theta, rope_cache=rope_cache)
     if kv_cache is not None:
         k, v = kv_cache.append(layer_idx, k, v)
     k = repeat_kv(k, config.q_per_kv_group)

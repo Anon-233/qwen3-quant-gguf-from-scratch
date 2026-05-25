@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 import torch
 
 
@@ -12,13 +16,47 @@ def rope_frequencies(
     return torch.outer(positions, inv_freq)
 
 
-def apply_rope(x: torch.Tensor, position_offset: int, theta: float) -> torch.Tensor:
+@dataclass(slots=True)
+class RoPECache:
+    """Pre-computed cos/sin tables for all positions up to max_seq_len."""
+
+    cos: torch.Tensor  # [max_seq_len, head_dim]
+    sin: torch.Tensor  # [max_seq_len, head_dim]
+
+    @staticmethod
+    def precompute(
+        head_dim: int, max_seq_len: int, theta: float, device: torch.device | str = "cpu"
+    ) -> RoPECache:
+        freqs = rope_frequencies(head_dim, max_seq_len, theta, torch.device(device))
+        emb = torch.cat((freqs, freqs), dim=-1)
+        return RoPECache(cos=emb.cos(), sin=emb.sin())
+
+    def slice(
+        self, seq_len: int, position_offset: int, device: torch.device | str
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Return (cos, sin) for positions [offset, offset+seq_len)."""
+        c = self.cos[position_offset : position_offset + seq_len].to(device)
+        s = self.sin[position_offset : position_offset + seq_len].to(device)
+        return c[None, :, None, :], s[None, :, None, :]
+
+
+def apply_rope(
+    x: torch.Tensor,
+    position_offset: int,
+    theta: float,
+    rope_cache: RoPECache | None = None,
+) -> torch.Tensor:
     # x: [batch, seq, heads, head_dim]
     _bsz, seq_len, _heads, head_dim = x.shape
-    freqs = rope_frequencies(head_dim, seq_len + position_offset, theta, x.device)[position_offset:]
-    emb = torch.cat((freqs, freqs), dim=-1)
-    cos = emb.cos()[None, :, None, :]
-    sin = emb.sin()[None, :, None, :]
+    if rope_cache is not None:
+        cos, sin = rope_cache.slice(seq_len, position_offset, x.device)
+    else:
+        freqs = rope_frequencies(
+            head_dim, seq_len + position_offset, theta, x.device
+        )[position_offset:]
+        emb = torch.cat((freqs, freqs), dim=-1)
+        cos = emb.cos()[None, :, None, :]
+        sin = emb.sin()[None, :, None, :]
     x_float = x.to(torch.float32)
     first, second = x_float[..., : head_dim // 2], x_float[..., head_dim // 2 :]
     rotated = torch.cat((-second, first), dim=-1)

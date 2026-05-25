@@ -7,6 +7,7 @@ from miniqwen.model.attention import gqa_attention
 from miniqwen.model.layers import embedding
 from miniqwen.model.mlp import swiglu_mlp
 from miniqwen.model.norm import rms_norm
+from miniqwen.model.rope import RoPECache
 
 
 class Qwen3TextModel:
@@ -27,6 +28,12 @@ class Qwen3TextModel:
         )
         self.compute_dtype = compute_dtype or (
             torch.float16 if self.device.type == "cuda" else torch.float32
+        )
+        self._rope_cache = RoPECache.precompute(
+            config.head_dim,
+            config.max_position_embeddings,
+            config.rope_theta,
+            device=self.device,
         )
         self._validate_minimum_tensors()
 
@@ -83,6 +90,7 @@ class Qwen3TextModel:
                     if f"blk.{i}.attn_k_norm.weight" in self.state_dict
                     else None
                 ),
+                rope_cache=self._rope_cache,
             )
             h = rms_norm(x, self._tensor(f"blk.{i}.ffn_norm.weight"), self.config.rms_norm_eps)
             x = x + swiglu_mlp(
