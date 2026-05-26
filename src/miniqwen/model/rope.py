@@ -35,6 +35,15 @@ class RoPECache:
         self, seq_len: int, position_offset: int, device: torch.device | str
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Return (cos, sin) for positions [offset, offset+seq_len)."""
+        max_seq_len = int(self.cos.shape[0])
+        requested = position_offset + seq_len
+        if requested > max_seq_len:
+            raise ValueError(
+                "RoPE cache capacity exceeded: "
+                f"position_offset={position_offset}, seq_len={seq_len}, "
+                f"requested_total={requested}, max_seq_len={max_seq_len}. "
+                "Increase max_position_embeddings or reduce the requested context length."
+            )
         c = self.cos[position_offset : position_offset + seq_len].to(device)
         s = self.sin[position_offset : position_offset + seq_len].to(device)
         return c[None, :, None, :], s[None, :, None, :]

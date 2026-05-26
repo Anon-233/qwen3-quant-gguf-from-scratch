@@ -20,6 +20,16 @@ def generate_tokens(
     generated = input_ids.to(device).clone()
     eos = set(eos_token_id if isinstance(eos_token_id, list) else [eos_token_id]) - {None}
     config = getattr(model, "config", None)
+    if config is not None:
+        requested_len = generated.shape[1] + max_new_tokens
+        if requested_len > config.max_position_embeddings:
+            raise ValueError(
+                "Requested generation exceeds model context length: "
+                f"prompt_len={generated.shape[1]}, max_new_tokens={max_new_tokens}, "
+                f"requested_total={requested_len}, "
+                f"max_position_embeddings={config.max_position_embeddings}. "
+                "Reduce the prompt length or max_new_tokens."
+            )
     if use_cache and config is not None:
         cache = KVCache(
             max_seq_len=config.max_position_embeddings,
